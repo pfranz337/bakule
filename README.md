@@ -1,4 +1,0 @@
-bakule
-======
-
-bakalarka
