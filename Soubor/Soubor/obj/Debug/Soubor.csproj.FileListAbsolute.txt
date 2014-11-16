@@ -1,0 +1,9 @@
+c:\users\petr\documents\visual studio 2012\Projects\Soubor\Soubor\bin\Debug\Soubor.exe.config
+c:\users\petr\documents\visual studio 2012\Projects\Soubor\Soubor\bin\Debug\Soubor.exe
+c:\users\petr\documents\visual studio 2012\Projects\Soubor\Soubor\bin\Debug\Soubor.pdb
+c:\users\petr\documents\visual studio 2012\Projects\Soubor\Soubor\obj\Debug\Soubor.csprojResolveAssemblyReference.cache
+c:\users\petr\documents\visual studio 2012\Projects\Soubor\Soubor\obj\Debug\Soubor.Form1.resources
+c:\users\petr\documents\visual studio 2012\Projects\Soubor\Soubor\obj\Debug\Soubor.Properties.Resources.resources
+c:\users\petr\documents\visual studio 2012\Projects\Soubor\Soubor\obj\Debug\Soubor.csproj.GenerateResource.Cache
+c:\users\petr\documents\visual studio 2012\Projects\Soubor\Soubor\obj\Debug\Soubor.exe
+c:\users\petr\documents\visual studio 2012\Projects\Soubor\Soubor\obj\Debug\Soubor.pdb
