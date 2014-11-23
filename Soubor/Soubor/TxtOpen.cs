@@ -11,24 +11,18 @@ namespace Soubory
 {
     class TxtOpen : Open
     {
-
-        private DataTable data;
+        
         public TxtOpen(string p)
             : base(p)
         {
             data = open();
-        }
-
-        public DataTable getData()
-        {
-            return this.data;
-        }
+        }        
 
         protected override DataTable open()
         {
 
             StreamReader sr = File.OpenText(getP());
-            
+
             string s = "";
             DataTable dt = new DataTable();
             int j = 0;
@@ -48,10 +42,9 @@ namespace Soubory
                 }
 
                 j++;
-            }            
+            }
 
             return dt;
         }
-
     }
 }

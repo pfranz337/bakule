@@ -14,7 +14,7 @@ namespace Soubory
     {
 
         private string p;
-
+        protected DataTable data;
 
 
         public Open(string p)
@@ -28,8 +28,14 @@ namespace Soubory
             return this.p;
         }
 
-        public string getJmSoubor() {
-            string []parser = this.p.Split('\\');
+        public DataTable getData()
+        {
+            return this.data;
+        }
+
+        public string getJmSoubor()
+        {
+            string[] parser = this.p.Split('\\');
             return parser[parser.Length - 1]; ;
         }
 
