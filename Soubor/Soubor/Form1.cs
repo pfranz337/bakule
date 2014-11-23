@@ -24,7 +24,7 @@ namespace Soubor
             string path = openFileDialog1.FileName;
 
             TxtOpen op = new TxtOpen(path);
-            label1.Text = op.getJmSoubor();
+            label1.Text = label1.Text + op.getJmSoubor();
             dataGridView1.DataSource = op.getData();
         }
     }
