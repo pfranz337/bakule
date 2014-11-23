@@ -1,5 +1,4 @@
-﻿using Soubory;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -23,9 +22,15 @@ namespace Soubor
             openFileDialog1.ShowDialog();
             string path = openFileDialog1.FileName;
 
-            TxtOpen op = new TxtOpen(path);
-            label1.Text = label1.Text + op.getJmSoubor();
-            dataGridView1.DataSource = op.getData();
+            //TypSoubor typSouboru = new TypSoubor();
+            //TxtOpen op = new TxtOpen(path);
+            //CSVOpen op = new CSVOpen(path);
+            //label1.Text = label1.Text + op.getJmSoubor();
+           // dataGridView1.DataSource = op.getData();
+
+            TypSoubor ts = new TypSoubor(path);
+            label1.Text = label1.Text + ts.getLabel();
+            dataGridView1.DataSource = ts.getData();
         }
     }
 }

@@ -9,14 +9,14 @@ using System.IO;
 
 namespace Soubor
 {
-    class TxtOpen : Open
+    class CSVOpen : Open
     {
-        
-        public TxtOpen(string p)
+
+        public CSVOpen(string p)
             : base(p)
         {
             data = open();
-        }        
+        }
 
         protected override DataTable open()
         {
@@ -28,7 +28,7 @@ namespace Soubor
             int j = 0;
             while ((s = sr.ReadLine()) != null)
             {
-                string[] split = s.Split('\t');
+                string[] split = s.Split(';');
 
 
                 if (j == 0)

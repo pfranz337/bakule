@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using System.IO;
 
 
-namespace Soubory
+namespace Soubor
 {
     abstract class Open
     {
@@ -37,7 +37,7 @@ namespace Soubory
         {
             string[] parser = this.p.Split('\\');
             return parser[parser.Length - 1]; ;
-        }
+        }        
 
         protected abstract DataTable open();
     }
