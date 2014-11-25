@@ -17,20 +17,41 @@ namespace Soubor
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+
+        TypSoubor ts;
+        private void MenuClickOpen(object sender, EventArgs e)
         {
             openFileDialog1.ShowDialog();
             string path = openFileDialog1.FileName;
 
-            //TypSoubor typSouboru = new TypSoubor();
-            //TxtOpen op = new TxtOpen(path);
-            //CSVOpen op = new CSVOpen(path);
-            //label1.Text = label1.Text + op.getJmSoubor();
-           // dataGridView1.DataSource = op.getData();
+            ts = new TypSoubor(path);
+            label1.Text = ts.getLabel();
+            dataGridView1.DataSource = ts.getData()[0];
+        }
 
-            TypSoubor ts = new TypSoubor(path);
-            label1.Text = label1.Text + ts.getLabel();
-            dataGridView1.DataSource = ts.getData();
+        private int index = 0;
+        private void ClickPrev(object sender, EventArgs e)
+        {
+            if (this.index == 0)
+            {
+                MessageBox.Show("Zadna predchazejici tabulka");
+            }
+            else {
+                index--;
+                dataGridView1.DataSource = ts.getData()[index];
+            }
+        }
+
+        private void ClickNext(object sender, EventArgs e)
+        {
+            if (this.index == ts.getData().Count-1)
+            {
+                MessageBox.Show("Zadna dalsi tabulka");
+            }
+            else {
+                index++;
+                dataGridView1.DataSource = ts.getData()[index];
+            }
         }
     }
 }

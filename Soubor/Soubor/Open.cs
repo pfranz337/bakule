@@ -14,7 +14,7 @@ namespace Soubor
     {
 
         private string p;
-        protected DataTable data;
+        protected List<DataTable> data;
 
 
         public Open(string p)
@@ -28,7 +28,7 @@ namespace Soubor
             return this.p;
         }
 
-        public DataTable getData()
+        public List<DataTable> getDataList()
         {
             return this.data;
         }
@@ -36,9 +36,9 @@ namespace Soubor
         public string getJmSoubor()
         {
             string[] parser = this.p.Split('\\');
-            return parser[parser.Length - 1]; ;
+            return "Oteviram soubor: " + parser[parser.Length - 1]; ;
         }        
 
-        protected abstract DataTable open();
+        protected abstract List<DataTable> open();
     }
 }

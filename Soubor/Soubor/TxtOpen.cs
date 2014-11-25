@@ -18,14 +18,15 @@ namespace Soubor
             data = open();
         }        
 
-        protected override DataTable open()
+        protected override List<DataTable> open()
         {
 
             StreamReader sr = File.OpenText(getP());
 
             string s = "";
+            List<DataTable> dtList = new List<DataTable>();
             DataTable dt = new DataTable();
-            int j = 0;
+            int j = 0, test = 1; ;
             while ((s = sr.ReadLine()) != null)
             {
                 string[] split = s.Split('\t');
@@ -38,13 +39,24 @@ namespace Soubor
                 }
                 else
                 {
-                    dt.Rows.Add(split);
+                    if (split.Length != 1)
+                        dt.Rows.Add(split);
+                    else 
+                    {
+                        dtList.Add(dt);
+                        test = 0;
+                        dt = new DataTable();
+                    }
                 }
-
-                j++;
+                if (test == 1)
+                    j++;
+                else {
+                    j = 0;
+                    test = 1;
+                }
             }
-
-            return dt;
+            dtList.Add(dt);
+            return dtList;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Soubor
     class TypSoubor
     {
         private string cesta = "", text = "";
-        private DataTable data;
+        private List<DataTable> data;
         public TypSoubor(string cesta) 
         {
             this.cesta = cesta;
@@ -29,7 +29,7 @@ namespace Soubor
             return this.text;
         }
 
-        public DataTable getData()
+        public List<DataTable> getData()
         {
             return this.data;
         }
@@ -41,12 +41,12 @@ namespace Soubor
             {
                 case "txt": 
                     TxtOpen txt = new TxtOpen(this.cesta);
-                    this.data = txt.getData();
+                    this.data = txt.getDataList();
                     this.text = txt.getJmSoubor();
                     break;
                 case "csv":
                     CSVOpen csv = new CSVOpen(this.cesta);
-                    this.data = csv.getData();
+                    this.data = csv.getDataList();
                     this.text = csv.getJmSoubor();
                     break;
             }
