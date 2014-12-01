@@ -18,20 +18,18 @@ namespace Soubor
         }
 
 
-        private TypSoubor ts;
-        private int index;
+        TypSoubor ts;
         private void MenuClickOpen(object sender, EventArgs e)
         {
-            //openFileDialog1.ShowDialog();
-            //string path = openFileDialog1.FileName;
-            string path = "data.csv";
+            openFileDialog1.ShowDialog();
+            string path = openFileDialog1.FileName;
+
             ts = new TypSoubor(path);
             label1.Text = ts.getLabel();
             dataGridView1.DataSource = ts.getData()[0];
-            this.index = 0;
         }
 
-        
+        private int index = 0;
         private void ClickPrev(object sender, EventArgs e)
         {
             if (this.index == 0)
