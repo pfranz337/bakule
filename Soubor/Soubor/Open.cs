@@ -14,6 +14,7 @@ namespace Soubor
     {
 
         private string p;
+        protected Kategorie[] k;
         protected List<DataTable> data;
 
 
