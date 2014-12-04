@@ -40,6 +40,7 @@ namespace Soubor
             return "Oteviram soubor: " + parser[parser.Length - 1]; ;
         }        
 
+        //metoda pro otevirani souboru se vstupnimi daty
         protected abstract List<DataTable> open();
     }
 }

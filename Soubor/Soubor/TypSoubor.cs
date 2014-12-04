@@ -35,7 +35,9 @@ namespace Soubor
         }
         
         public void openType(){
-
+            /*
+             *  metoda pro vybrani spravneho typu souboru
+             */
 
             switch (getPrip())
             {
