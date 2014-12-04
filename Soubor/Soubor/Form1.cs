@@ -31,10 +31,15 @@ namespace Soubor
             dt = ts.getData()[0];
             dataGridView1.DataSource = dt;
             this.index = 0;
-            naplnBox();
+            naplnBox(); 
+
+            //pocatecni nastaveni
+            cilovaSkupina.SelectedIndex = 0;
+            prediktori.SelectedIndex = 1;
         }
 
         private void naplnBox() {
+            //naplni comboboxy nazvama sloupcu tabulky
             for (int i = 0; i < dt.Columns.Count; i++) {
                 cilovaSkupina.Items.Add(dt.Columns[i].ColumnName);
                 prediktori.Items.Add(dt.Columns[i].ColumnName); 
@@ -68,8 +73,10 @@ namespace Soubor
 
         int pomIC, pomIP, count = 0; 
         DataColumn pomC = new DataColumn(), pomP = new DataColumn();
-        private void button3_Click(object sender, EventArgs e)
+        private void Enter_Click(object sender, EventArgs e)
         {
+            /*vymenuje po kliknuti na tl. nastaveni cilove skupiny a prediktora 
+             * (uklada si predchozi nastaveni a po zmene vraci nastavuje na puvodni)*/
             int C = cilovaSkupina.SelectedIndex;
             int P = prediktori.SelectedIndex;
 

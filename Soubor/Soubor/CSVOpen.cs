@@ -80,5 +80,14 @@ namespace Soubor
             this.data.Add(dt);
             return this.data;
         }
+
+        /*  metoda pro jednodusi parsovani tabulek po prazdnych radcich
+         * private bool isEmpty(string[] s) {
+            foreach (string i in s) {
+                if (i != String.Empty) return false;
+            }
+            
+            return true;
+        }*/
     }
 }

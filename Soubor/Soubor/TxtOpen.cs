@@ -83,12 +83,13 @@ namespace Soubor
             return dtList;
         }
 
-        private bool isEmpty(string[] s) {
+        /*  metoda pro jednodusi parsovani tabulek po prazdnych radcich
+         * private bool isEmpty(string[] s) {
             foreach (string i in s) {
                 if (i != String.Empty) return false;
             }
             
             return true;
-        }
+        }*/
     }
 }

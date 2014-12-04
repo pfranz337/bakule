@@ -37,7 +37,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.cilovaSkupina = new System.Windows.Forms.ComboBox();
             this.prediktori = new System.Windows.Forms.ComboBox();
-            this.button3 = new System.Windows.Forms.Button();
+            this.Enter = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -118,15 +118,15 @@
             this.prediktori.Size = new System.Drawing.Size(121, 21);
             this.prediktori.TabIndex = 7;
             // 
-            // button3
+            // Enter
             // 
-            this.button3.Location = new System.Drawing.Point(431, 68);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 8;
-            this.button3.Text = "Enter";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.Enter.Location = new System.Drawing.Point(431, 68);
+            this.Enter.Name = "Enter";
+            this.Enter.Size = new System.Drawing.Size(75, 23);
+            this.Enter.TabIndex = 8;
+            this.Enter.Text = "Enter";
+            this.Enter.UseVisualStyleBackColor = true;
+            this.Enter.Click += new System.EventHandler(this.Enter_Click);
             // 
             // label3
             // 
@@ -153,7 +153,7 @@
             this.ClientSize = new System.Drawing.Size(948, 342);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.button3);
+            this.Controls.Add(this.Enter);
             this.Controls.Add(this.prediktori);
             this.Controls.Add(this.cilovaSkupina);
             this.Controls.Add(this.button2);
@@ -183,7 +183,7 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ComboBox cilovaSkupina;
         private System.Windows.Forms.ComboBox prediktori;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button Enter;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
     }
