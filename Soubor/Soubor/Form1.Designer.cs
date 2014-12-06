@@ -35,11 +35,6 @@
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.cilovaSkupina = new System.Windows.Forms.ComboBox();
-            this.prediktori = new System.Windows.Forms.ComboBox();
-            this.Enter = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -60,7 +55,7 @@
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(13, 95);
+            this.dataGridView1.Location = new System.Drawing.Point(13, 113);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(923, 235);
             this.dataGridView1.TabIndex = 2;
@@ -84,7 +79,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(15, 66);
+            this.button1.Location = new System.Drawing.Point(15, 79);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 4;
@@ -94,7 +89,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(96, 66);
+            this.button2.Location = new System.Drawing.Point(96, 79);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 5;
@@ -102,60 +97,11 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.ClickNext);
             // 
-            // cilovaSkupina
-            // 
-            this.cilovaSkupina.FormattingEnabled = true;
-            this.cilovaSkupina.Location = new System.Drawing.Point(177, 68);
-            this.cilovaSkupina.Name = "cilovaSkupina";
-            this.cilovaSkupina.Size = new System.Drawing.Size(121, 21);
-            this.cilovaSkupina.TabIndex = 6;
-            // 
-            // prediktori
-            // 
-            this.prediktori.FormattingEnabled = true;
-            this.prediktori.Location = new System.Drawing.Point(304, 68);
-            this.prediktori.Name = "prediktori";
-            this.prediktori.Size = new System.Drawing.Size(121, 21);
-            this.prediktori.TabIndex = 7;
-            // 
-            // Enter
-            // 
-            this.Enter.Location = new System.Drawing.Point(431, 68);
-            this.Enter.Name = "Enter";
-            this.Enter.Size = new System.Drawing.Size(75, 23);
-            this.Enter.TabIndex = 8;
-            this.Enter.Text = "Enter";
-            this.Enter.UseVisualStyleBackColor = true;
-            this.Enter.Click += new System.EventHandler(this.Enter_Click);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(177, 52);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(81, 13);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "Cislova skupina";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(304, 52);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(49, 13);
-            this.label4.TabIndex = 11;
-            this.label4.Text = "Prediktor";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(948, 342);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.Enter);
-            this.Controls.Add(this.prediktori);
-            this.Controls.Add(this.cilovaSkupina);
+            this.ClientSize = new System.Drawing.Size(948, 642);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.dataGridView1);
@@ -181,11 +127,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.ComboBox cilovaSkupina;
-        private System.Windows.Forms.ComboBox prediktori;
-        private System.Windows.Forms.Button Enter;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
     }
 }
 
