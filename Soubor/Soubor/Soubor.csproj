@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CSVOpen.cs" />
+    <Compile Include="Entropy.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

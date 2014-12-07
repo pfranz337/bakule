@@ -208,7 +208,7 @@ namespace Soubor
 
             DataGridView[] dtv = new DataGridView[ts.getKats().Length];
             int posunX = 13, posunY = 450;
-            for (int i = 1; i < ts.getKats().Length; i++)
+            for (int i = 0; i < ts.getKats().Length; i++)
             {
                 dtv[i] = new DataGridView();             
                 dtv[i].Location = new System.Drawing.Point(posunX, posunY);
@@ -222,7 +222,35 @@ namespace Soubor
                     posunX = 13;
                     posunY += 150;
                 }                
-            }            
+            }
+
+            informacniZisk(ts.spustEntropy());
+
+        }
+
+        private void informacniZisk(Dictionary<string, double> zisk) 
+        {
+            /*
+             * metoda pro vypis inforomacniho zisku podle nepodminene entropie
+             * 
+             */
+
+            int x=450, y=620;
+            Label l = new Label();
+            l.Location = new Point(x, y-16);
+            l.Size = new System.Drawing.Size(200, 13);
+            l.Text = "Informacni zisk:";
+            Controls.Add(l);
+            foreach (KeyValuePair<string, double> kvp in zisk) 
+            {
+                l = new Label();
+                l.Location = new Point(x, y);
+                l.Size = new System.Drawing.Size(200, 13);
+                l.Text = kvp.Key + ": " + kvp.Value.ToString();
+                y += 16;
+                Controls.Add(l);
+            }
+            
         }
     }
 }

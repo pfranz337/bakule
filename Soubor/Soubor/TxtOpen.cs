@@ -79,8 +79,9 @@ namespace Soubor
                     test = 1;
                 }*/
             }
-            dtList.Add(dt);
-            return dtList;
+
+            this.data.Add(dt);
+            return this.data;
         }
 
         /*  metoda pro jednodusi parsovani tabulek po prazdnych radcich

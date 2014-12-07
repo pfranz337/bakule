@@ -63,6 +63,12 @@ namespace Soubor
             return cetnostiKat;
         }
 
+        public Kategorie[] getKategory()
+        {
+            //pouze getter pole Kategorii - prvotne pro pouziti v entropii
+            return this.k;
+        }
+        
         //metoda pro otevirani souboru se vstupnimi daty
         protected abstract List<DataTable> open();
     }
