@@ -17,8 +17,7 @@ namespace Soubor
             InitializeComponent();
         }
 
-
-        private TypSoubor ts;
+        private TypSoubor ts;   //struktura pro otevirani neznameho souboru (zatim txt nebo csv)
         private int index, pocetKliknuti;
         private DataTable dt;
         private CheckBox[] prediktori;
@@ -34,11 +33,16 @@ namespace Soubor
             label1.Text = ts.getLabel();
             dt = ts.getData()[0];
             dataGridView1.DataSource = dt;
+            dataGridView1.AutoResizeColumns();            
             this.index = 0;
             check();            
         }
         
         private void check() {
+            /*            
+             * Vytvari checkboxy s popiskama
+             */
+
             int size = dt.Columns.Count;
             Label pred = new Label();
             int x = 180, y = 30, posun = 120;
@@ -102,8 +106,14 @@ namespace Soubor
 
         private void initComboLine() 
         {
+            /*
+             * vytvari lajnu s rozhranim pro uzivatele (combobox, tlacitka, popisky)
+             */
+
+
             Label cil = new Label();
             Button enter = new Button();
+            Button kategory = new Button();
 
             int x = 180, y = 80;
             string s = "Vyber predikovany atribut: ";
@@ -124,12 +134,25 @@ namespace Soubor
             enter.Location = new Point(x, y);
             enter.Click += new System.EventHandler(this.clickEnter);
 
+            x += enter.Width;
+            kategory.Text = "Kategory";
+            kategory.Location = new Point(x, y);
+            kategory.Click += new System.EventHandler(this.clickKategory);
+
             Controls.Add(enter);
+            Controls.Add(kategory);
             Controls.Add(cil);
+        }
+
+        private void clickKategory(object sender, EventArgs e)
+        {
+            //odchyceni udalosti kliknuti na tlacitko kategorie
+            kategoryTable();
         }        
 
         private void ClickPrev(object sender, EventArgs e)
         {
+            //odchyceni udalosti kliknuti na tlacitko prev
             if (this.index == 0)
             {
                 MessageBox.Show("Zadna predchazejici tabulka");
@@ -142,6 +165,7 @@ namespace Soubor
 
         private void ClickNext(object sender, EventArgs e)
         {
+            //odchyceni udalosti kliknuti na tlacitko next
             if (this.index == ts.getData().Count-1)
             {
                 MessageBox.Show("Zadna dalsi tabulka");
@@ -174,6 +198,31 @@ namespace Soubor
             }
 
             selectIndex = cilovaSkupina.SelectedItem.ToString();
+        }
+
+        private void kategoryTable() 
+        {
+            /**
+             * vytvari tabulky kategorii - taha je ze slovniku kategorii (trida Kategorie)
+             * */
+
+            DataGridView[] dtv = new DataGridView[ts.getKats().Length];
+            int posunX = 13, posunY = 450;
+            for (int i = 1; i < ts.getKats().Length; i++)
+            {
+                dtv[i] = new DataGridView();             
+                dtv[i].Location = new System.Drawing.Point(posunX, posunY);
+                dtv[i].Size = new System.Drawing.Size(210, 140);                
+                dtv[i].DataSource = ts.getKats()[i];
+                Controls.Add(dtv[i]); 
+                dtv[i].AutoResizeColumns();
+                posunX += 215;
+                if (posunX + 200 > this.Width) 
+                {
+                    posunX = 13;
+                    posunY += 150;
+                }                
+            }            
         }
     }
 }

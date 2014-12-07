@@ -38,7 +38,30 @@ namespace Soubor
         {
             string[] parser = this.p.Split('\\');
             return "Oteviram soubor: " + parser[parser.Length - 1]; ;
-        }        
+        }
+
+        public DataTable[] getKategoryTables() {
+            /*
+             * vytvari tabulky s cetnostmi kategorii - taha je ze slovniku
+             */
+            DataTable[] cetnostiKat = new DataTable[this.k.Length];
+
+            for (int i = 0; i < cetnostiKat.Length; i++) {
+                cetnostiKat[i] = new DataTable();
+                cetnostiKat[i].Columns.Add(k[i].getJmeno());
+                cetnostiKat[i].Columns.Add("Pocet");
+
+                foreach (KeyValuePair<string, int> d in k[i].getKat()) 
+                {
+                    string[] zapis = new string[2];
+                    zapis[0] = d.Key.ToString();
+                    zapis[1] = d.Value.ToString();
+
+                    cetnostiKat[i].Rows.Add(zapis);
+                }
+            }
+            return cetnostiKat;
+        }
 
         //metoda pro otevirani souboru se vstupnimi daty
         protected abstract List<DataTable> open();
