@@ -20,7 +20,8 @@ namespace Soubor
         private TypSoubor ts;   //struktura pro otevirani neznameho souboru (zatim txt nebo csv)
         private int index, pocetKliknuti;
         private DataTable dt;
-        private CheckBox[] prediktori;
+        private CheckBox[] prediktori;          //checkboxy pro nastaveni predikovanych atributu
+        private CheckBox[] nechteneAtributy;    //checkboxy pro vypnuti nechtenych atributu
         private string selectIndex = "";
         private ComboBox cilovaSkupina = new ComboBox();
 
@@ -45,26 +46,60 @@ namespace Soubor
 
             int size = dt.Columns.Count;
             Label pred = new Label();
+            Label check = new Label();
             int x = 180, y = 30, posun = 120;
 
-            pred.Text = "Vyber atributu:";
-            pred.Location = new Point(x, y-8);
-            prediktori = new CheckBox[size];
-            Controls.Add(pred);
+            //vse posunuto dolu o radek s nechtenymi atributy!!!! -> zvetseni Formu
 
+            pred.Text = "Vyber atributu:";
+            check.Text = "Vyber atributy, ktere nechces zahrnout:";
+            pred.Location = new Point(x, y + 40);
+            check.Location = new Point(x, y - 8);
+            check.Size = new System.Drawing.Size(250, pred.Size.Height);
+            prediktori = new CheckBox[size];
+            nechteneAtributy = new CheckBox[size];
+            Controls.Add(pred);
+            Controls.Add(check);
             for (int i = 0; i < size; i++) {
+                //nastaveni checkboxu s prediktory
                 prediktori[i] = new CheckBox();
                 prediktori[i].Name = dt.Columns[i].ColumnName;
                 prediktori[i].Text = dt.Columns[i].ColumnName;
                 prediktori[i].Checked = false;
-                prediktori[i].Location = new Point(x, y+10);
+                prediktori[i].Location = new Point(x, y+60);
                 prediktori[i].Click += new System.EventHandler(this.naplnBox);
+
+                //nastaveni checkboxu s nechtenymi atributy
+                nechteneAtributy[i] = new CheckBox();
+                nechteneAtributy[i].Name = dt.Columns[i].ColumnName;
+                nechteneAtributy[i].Text = dt.Columns[i].ColumnName;
+                nechteneAtributy[i].Checked = false;
+                nechteneAtributy[i].Location = new Point(x, y + 10);
+                nechteneAtributy[i].Click += new System.EventHandler(this.vypniPrediktora);
                 x += posun;
 
                 Controls.Add(prediktori[i]);
+                Controls.Add(nechteneAtributy[i]);
             }            
-        }        
-        
+        }
+
+        private void vypniPrediktora(object sender, EventArgs e)
+        {
+            /*
+             * metoda pro disable checkboxu pro vyber atributu podle zaskrtnutych checkboxu v nechtenych atributech
+             */
+            for (int i = 0; i < nechteneAtributy.Length; i++) {
+                if (nechteneAtributy[i].Checked)
+                {
+                    prediktori[i].Enabled = false;
+                }
+                else {
+                    prediktori[i].Enabled = true;
+                }
+            }
+            
+        }
+
         private void naplnBox(object sender, EventArgs e)
         {
             //naplni combobox nazvama sloupcu tabulky
@@ -87,7 +122,8 @@ namespace Soubor
             initComboLine();
 
             for (int i = 0; i < dt.Columns.Count; i++) {
-                if (!prediktori[i].Checked)                
+                if (!prediktori[i].Checked && !nechteneAtributy[i].Checked) 
+                    //pridana podminka za ANDem - pridaji se jen ty itemy ktere nejsou vynute a ktere jsou zaskrtnute          
                     cilovaSkupina.Items.Add(prediktori[i].Name);                
             }
             pocetKliknuti++;
@@ -115,7 +151,7 @@ namespace Soubor
             Button enter = new Button();
             Button kategory = new Button();
 
-            int x = 180, y = 80;
+            int x = 180, y = 130;
             string s = "Vyber predikovany atribut: ";
 
             cil.Location = new Point(x, y);
@@ -128,6 +164,7 @@ namespace Soubor
             cilovaSkupina.Name = "cilovaSkupina";
             cilovaSkupina.Size = new System.Drawing.Size(121, 21);
             cilovaSkupina.TabIndex = 6;
+            cilovaSkupina.SelectedValueChanged += new System.EventHandler(this.vypniCil);       //pridani udalosti
 
             x += 121;
             enter.Text = "Enter";
@@ -142,6 +179,22 @@ namespace Soubor
             Controls.Add(enter);
             Controls.Add(kategory);
             Controls.Add(cil);
+        }
+
+        private void vypniCil(object sender, EventArgs e) {
+            /*
+             * metoda pro disable checkboxu pri vybrani itemu z comboboxu
+             */
+            for (int i = 0; i < prediktori.Length; i++)
+            {
+                if (nechteneAtributy[i].Checked || cilovaSkupina.SelectedItem.ToString() == prediktori[i].Text.ToString())
+                {
+                    prediktori[i].Enabled = false;
+                }
+                else {
+                    prediktori[i].Enabled = true;
+                }
+            }
         }
 
         private void clickKategory(object sender, EventArgs e)
@@ -193,7 +246,7 @@ namespace Soubor
                     dt.Columns[i].ColumnName = prediktori[i].Name;
                 if (dt.Columns[i].ColumnName.Equals(cil))
                 {
-                    dt.Columns[i].ColumnName += " - C";
+                    dt.Columns[i].ColumnName += " CIL";     //zmena na " CIL" kvuli podmince Equals('-')
                 }
             }
 
@@ -207,7 +260,7 @@ namespace Soubor
              * */
 
             DataGridView[] dtv = new DataGridView[ts.getKats().Length];
-            int posunX = 13, posunY = 450;
+            int posunX = 13, posunY = 500;
             for (int i = 0; i < ts.getKats().Length; i++)
             {
                 dtv[i] = new DataGridView();             
@@ -235,7 +288,7 @@ namespace Soubor
              * 
              */
 
-            int x=450, y=620;
+            int x=450, y=680;
             Label l = new Label();
             l.Location = new Point(x, y-16);
             l.Size = new System.Drawing.Size(200, 13);
