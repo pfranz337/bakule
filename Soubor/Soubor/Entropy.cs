@@ -21,10 +21,10 @@ namespace Soubor
             this.kat = k;
         }
 
-        public Dictionary<string, double> vypocet() 
+        public Dictionary<string, double> vypocet(string cil) 
         {
             /*
-             *metoda pro vypocet nepodminene etntropie              
+             *metoda pro vypocet Informacniho zisku           
              */
 
             double vysledek = 0;
@@ -39,6 +39,10 @@ namespace Soubor
                 vysledek = 0;
             }
 
+            for (int i = 0; i < kat.Length; i++) {
+                zisk[kat[i].getJmeno()] = zisk[cil] - zisk[kat[i].getJmeno()];
+            }         
+            
             return this.zisk;
         }
     }

@@ -135,7 +135,7 @@ namespace Soubor
                     }
                 }
             } else
-                cilovaSkupina.SelectedIndex = 0;
+                cilovaSkupina.SelectedIndex = cilovaSkupina.Items.Count-1;
             Controls.Add(cilovaSkupina);
             
         }
@@ -149,7 +149,6 @@ namespace Soubor
 
             Label cil = new Label();
             Button enter = new Button();
-            Button kategory = new Button();
 
             int x = 180, y = 130;
             string s = "Vyber predikovany atribut: ";
@@ -171,13 +170,7 @@ namespace Soubor
             enter.Location = new Point(x, y);
             enter.Click += new System.EventHandler(this.clickEnter);
 
-            x += enter.Width;
-            kategory.Text = "Kategory";
-            kategory.Location = new Point(x, y);
-            kategory.Click += new System.EventHandler(this.clickKategory);
-
             Controls.Add(enter);
-            Controls.Add(kategory);
             Controls.Add(cil);
         }
 
@@ -195,13 +188,7 @@ namespace Soubor
                     prediktori[i].Enabled = true;
                 }
             }
-        }
-
-        private void clickKategory(object sender, EventArgs e)
-        {
-            //odchyceni udalosti kliknuti na tlacitko kategorie
-            kategoryTable();
-        }        
+        }      
 
         private void ClickPrev(object sender, EventArgs e)
         {
@@ -250,7 +237,8 @@ namespace Soubor
                 }
             }
 
-            selectIndex = cilovaSkupina.SelectedItem.ToString();
+            this.selectIndex = cilovaSkupina.SelectedItem.ToString();
+            kategoryTable();
         }
 
         private void kategoryTable() 
@@ -263,21 +251,23 @@ namespace Soubor
             int posunX = 13, posunY = 500;
             for (int i = 0; i < ts.getKats().Length; i++)
             {
-                dtv[i] = new DataGridView();             
-                dtv[i].Location = new System.Drawing.Point(posunX, posunY);
-                dtv[i].Size = new System.Drawing.Size(210, 140);                
-                dtv[i].DataSource = ts.getKats()[i];
-                Controls.Add(dtv[i]); 
-                dtv[i].AutoResizeColumns();
-                posunX += 215;
-                if (posunX + 200 > this.Width) 
+                if (!nechteneAtributy[i].Checked)
                 {
-                    posunX = 13;
-                    posunY += 150;
-                }                
+                    dtv[i] = new DataGridView();
+                    dtv[i].Location = new System.Drawing.Point(posunX, posunY);
+                    dtv[i].Size = new System.Drawing.Size(210, 140);
+                    dtv[i].DataSource = ts.getKats()[i];
+                    Controls.Add(dtv[i]);
+                    dtv[i].AutoResizeColumns();
+                    posunX += 215;
+                    if (posunX + 200 > this.Width)
+                    {
+                        posunX = 13;
+                        posunY += 150;
+                    }
+                }
             }
-
-            informacniZisk(ts.spustEntropy());
+            informacniZisk(ts.spustEntropy(this.selectIndex));
 
         }
 
@@ -294,14 +284,19 @@ namespace Soubor
             l.Size = new System.Drawing.Size(200, 13);
             l.Text = "Informacni zisk:";
             Controls.Add(l);
-            foreach (KeyValuePair<string, double> kvp in zisk) 
+            int i = 0;
+            foreach (KeyValuePair<string, double> kvp in zisk)
             {
-                l = new Label();
-                l.Location = new Point(x, y);
-                l.Size = new System.Drawing.Size(200, 13);
-                l.Text = kvp.Key + ": " + kvp.Value.ToString();
-                y += 16;
-                Controls.Add(l);
+                if (!nechteneAtributy[i].Checked)
+                {
+                    l = new Label();
+                    l.Location = new Point(x, y);
+                    l.Size = new System.Drawing.Size(200, 13);
+                    l.Text = kvp.Key + ": " + kvp.Value.ToString();
+                    y += 16;
+                    Controls.Add(l);
+                }
+                i++;
             }
             
         }
