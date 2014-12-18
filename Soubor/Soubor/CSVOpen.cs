@@ -19,7 +19,7 @@ namespace Soubor
         }
 
         protected override char getParser()
-        {
+        {   //nastaveni parseru
             return ';';
         }
 

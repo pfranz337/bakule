@@ -13,7 +13,7 @@ namespace Soubor
         private string cesta = "", text = "";
         private List<DataTable> data;
         private Kategorie[] k;
-        private Entropy e;  //trida entropie s vypoctama
+        private IFZ ifz;  //trida entropie s vypoctama
         public TypSoubor(string cesta) 
         {
             this.cesta = cesta;
@@ -44,7 +44,7 @@ namespace Soubor
         public Dictionary<string, double> spustEntropy(string cil)
         {
             // metoda pro spusteni vypoctu nepodminene entropie
-            return this.e.vypocet(cil);
+            return this.ifz.vypocet(cil);
         }
 
         public DataTable[] getKategoryTables()
@@ -91,9 +91,9 @@ namespace Soubor
                     this.text = csv.getJmSoubor();
                     break;
             }
-            e = new Entropy(data[0].Rows.Count);
-            setKategory(this.data[0]);
-            e.setKat(getKategory());
+            ifz = new IFZ(data[0].Rows.Count);
+            setKategory(this.data[this.data.Count-1]);
+            ifz.setKat(getKategory());
         }
 
         private void setKategory(DataTable dt) {

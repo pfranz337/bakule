@@ -251,7 +251,7 @@ namespace Soubor
             int posunX = 13, posunY = 500;
             for (int i = 0; i < ts.getKats().Length; i++)
             {
-                if (!nechteneAtributy[i].Checked)
+                if (!nechteneAtributy[i].Checked && prediktori[i].Checked)
                 {
                     dtv[i] = new DataGridView();
                     dtv[i].Location = new System.Drawing.Point(posunX, posunY);
@@ -267,7 +267,12 @@ namespace Soubor
                     }
                 }
             }
-            informacniZisk(ts.spustEntropy(this.selectIndex));
+            Button b = new Button();
+            b.Text = "IFZ";
+            b.Location = new Point(posunX, posunY);
+            b.Click += new System.EventHandler(this.clickIFZ);
+
+            Controls.Add(b);            
 
         }
 
@@ -287,7 +292,7 @@ namespace Soubor
             int i = 0;
             foreach (KeyValuePair<string, double> kvp in zisk)
             {
-                if (!nechteneAtributy[i].Checked)
+                if (!nechteneAtributy[i].Checked && prediktori[i].Checked)
                 {
                     l = new Label();
                     l.Location = new Point(x, y);
@@ -300,5 +305,40 @@ namespace Soubor
             }
             
         }
+
+        private void clickIFZ(object sender, EventArgs e)
+        {
+            informacniZisk(ts.spustEntropy(this.selectIndex));
+            string jmeno = getMax(ts.spustEntropy(this.selectIndex)).Key;
+            double hodnota = getMax(ts.spustEntropy(this.selectIndex)).Value;
+            Form krok = new Form();
+            Label max = new Label();                   
+            max.Location = new Point(10,10);
+            max.Size = new System.Drawing.Size(200, 13);
+            max.Text = "max: " + jmeno + " " + hodnota;
+            krok.Controls.Add(max);
+            krok.Show();
+        }
+
+        private void paint(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private KeyValuePair<string, double> getMax(Dictionary<string, double> zisk) 
+        {
+            double maxH = Double.MaxValue;
+            KeyValuePair<string, double> max = new KeyValuePair<string,double>();
+            foreach (KeyValuePair<string, double> kvp in zisk) {
+                double ziskH = Math.Abs(kvp.Value);
+                if (!kvp.Key.Equals(cilovaSkupina.SelectedItem.ToString()))
+                    if (ziskH < maxH) {
+                        maxH = ziskH;
+                        max = kvp;
+                    }
+            }
+            return max;
+        }
+
     }
 }
