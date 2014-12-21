@@ -37,7 +37,7 @@ namespace Soubor
         public string getJmSoubor()
         {
             string[] parser = this.p.Split('\\');
-            return "Oteviram soubor: " + parser[parser.Length - 1]; ;
+            return "Oteviram soubor: " + parser[parser.Length - 1];
         }
 
         public DataTable[] getKategoryTables() {

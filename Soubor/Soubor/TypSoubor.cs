@@ -13,38 +13,45 @@ namespace Soubor
         private string cesta = "", text = "";
         private List<DataTable> data;
         private Kategorie[] k;
-        private IFZ ifz;  //trida entropie s vypoctama
+        private IFZ ifz;  //trida informacniho zisku s vypoctem
+        private Entropy entropy;  //trida entropie s vypoctem
         public TypSoubor(string cesta) 
-        {
+        {   //otevreni souboru
             this.cesta = cesta;
             openType();
         }
 
         private string getPrip()
-        {
+        {   //vraci nazev souboru s priponou
             string[] parser = this.cesta.Split('.');
             return parser[parser.Length - 1]; ;
         }
 
         public string getLabel() 
-        {
+        {   //nastavuje text do labelu s nazvem souboru
             return this.text;
         }
 
         public List<DataTable> getData()
-        {
+        {   //vraci list dat jak sli po krocich za sebou
             return this.data;
         }
 
         public DataTable[] getKats()
-        {
+        {   //vraci pole tabulek s cetnostmi kategorii
             return getKategoryTables();
+        }
+
+        public Dictionary<string, double> spustIFZ(string cil)
+        {
+            // metoda pro spusteni vypoctu nepodminene entropie
+            return this.ifz.vypocet(cil);
         }
 
         public Dictionary<string, double> spustEntropy(string cil)
         {
             // metoda pro spusteni vypoctu nepodminene entropie
-            return this.ifz.vypocet(cil);
+            return this.entropy.vypocet(cil);
         }
 
         public DataTable[] getKategoryTables()
@@ -91,12 +98,33 @@ namespace Soubor
                     this.text = csv.getJmSoubor();
                     break;
             }
-            ifz = new IFZ(data[0].Rows.Count);
-            setKategory(this.data[this.data.Count-1]);
+            
+            setKategory(this.data[this.data.Count-1]);  //nastavuje posledni vlozenou tabulku do listu pro pocitani kategorii
+            
+        }
+
+        public void initIFZ() {
+            //inicializace IFZ
+            setIFZ(data[this.data.Count - 1].Rows.Count);
             ifz.setKat(getKategory());
         }
 
-        private void setKategory(DataTable dt) {
+        public void initEntropy()
+        {
+            //inicializace Entropy
+            setEntropy(data[this.data.Count - 1].Rows.Count);
+            entropy.setKat(getKategory());
+        }
+
+        public void setIFZ(int i) {
+            this.ifz = new IFZ(i);
+        }
+
+        public void setEntropy(int i) {
+            this.entropy = new Entropy(i);
+        }
+
+        public void setKategory(DataTable dt) {
             /*
              *  pocita kategorie z tabulky
              */
@@ -127,6 +155,13 @@ namespace Soubor
         {   //vraci pole kategorii
             return this.k;
         }
-        
+
+        public AData getIFZ() {
+            return this.ifz;
+        }
+
+        public AData getEntropy() {
+            return this.entropy;
+        }
     }
 }

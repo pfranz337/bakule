@@ -26,13 +26,13 @@ namespace Soubor
         private ComboBox cilovaSkupina = new ComboBox();
 
         private void MenuClickOpen(object sender, EventArgs e)
-        {
+        {   //otevreni souboru a pocatecni init
             //openFileDialog1.ShowDialog();
             //string path = openFileDialog1.FileName;
             string path = "data.csv";
             ts = new TypSoubor(path);
             label1.Text = ts.getLabel();
-            dt = ts.getData()[0];
+            dt = ts.getData()[ts.getData().Count-1];
             dataGridView1.DataSource = dt;
             dataGridView1.AutoResizeColumns();            
             this.index = 0;
@@ -104,7 +104,7 @@ namespace Soubor
         {
             //naplni combobox nazvama sloupcu tabulky
             if (pocetKliknuti > 0)
-            {
+            {   //mazani zaskrtnutych prediktoru s comboboxu
                 object[] oj = new object[cilovaSkupina.Items.Count];
                 int ind = 0;
 
@@ -123,7 +123,7 @@ namespace Soubor
 
             for (int i = 0; i < dt.Columns.Count; i++) {
                 if (!prediktori[i].Checked && !nechteneAtributy[i].Checked) 
-                    //pridana podminka za ANDem - pridaji se jen ty itemy ktere nejsou vynute a ktere jsou zaskrtnute          
+                    //pridana podminka za ANDem - pridaji se jen ty itemy ktere nejsou vypnute a ktere jsou zaskrtnute          
                     cilovaSkupina.Items.Add(prediktori[i].Name);                
             }
             pocetKliknuti++;
@@ -226,14 +226,14 @@ namespace Soubor
             for (int i = 0; i < prediktori.Length; i++) {
                 if (prediktori[i].Checked)
                 {
-                    if (dt.Columns[i].ColumnName[dt.Columns[i].ColumnName.Length - 3].Equals('-') == false)
-                        dt.Columns[i].ColumnName += " - P";
+                    if (dt.Columns[i].ColumnName[dt.Columns[i].ColumnName.Length - 3].Equals('-') == false) ;
+                        //dt.Columns[i].ColumnName += " - P";
                 }
                 else
                     dt.Columns[i].ColumnName = prediktori[i].Name;
                 if (dt.Columns[i].ColumnName.Equals(cil))
                 {
-                    dt.Columns[i].ColumnName += " CIL";     //zmena na " CIL" kvuli podmince Equals('-')
+                    //dt.Columns[i].ColumnName += " CIL";     //zmena na " CIL" kvuli podmince Equals('-')
                 }
             }
 
@@ -241,23 +241,30 @@ namespace Soubor
             kategoryTable();
         }
 
+        DataGridView[] dtv;
+        int krok = 1;
+        Button entropy, ifz;
         private void kategoryTable() 
         {
             /**
              * vytvari tabulky kategorii - taha je ze slovniku kategorii (trida Kategorie)
              * */
-
-            DataGridView[] dtv = new DataGridView[ts.getKats().Length];
+            if (krok == 1)
+                dtv = new DataGridView[ts.getKats().Length];
             int posunX = 13, posunY = 500;
             for (int i = 0; i < ts.getKats().Length; i++)
             {
                 if (!nechteneAtributy[i].Checked && prediktori[i].Checked)
                 {
-                    dtv[i] = new DataGridView();
-                    dtv[i].Location = new System.Drawing.Point(posunX, posunY);
-                    dtv[i].Size = new System.Drawing.Size(210, 140);
+                    if (krok == 1)
+                    {
+                        dtv[i] = new DataGridView();
+                        dtv[i].Location = new System.Drawing.Point(posunX, posunY);
+                        dtv[i].Size = new System.Drawing.Size(210, 140);
+
+                        Controls.Add(dtv[i]);
+                    }
                     dtv[i].DataSource = ts.getKats()[i];
-                    Controls.Add(dtv[i]);
                     dtv[i].AutoResizeColumns();
                     posunX += 215;
                     if (posunX + 200 > this.Width)
@@ -266,77 +273,113 @@ namespace Soubor
                         posunY += 150;
                     }
                 }
+                else
+                    if (!prediktori[i].Checked)
+                        Controls.Remove(dtv[i]);
             }
-            Button b = new Button();
-            b.Text = "IFZ";
-            b.Location = new Point(posunX, posunY);
-            b.Click += new System.EventHandler(this.clickIFZ);
+            if (krok == 1) 
+            {
+                ifz = new Button();
+                ifz.Text = "IFZ";
+                ifz.Location = new Point(posunX, posunY);
+                ifz.Click += new System.EventHandler(this.clickIFZ);
+                Controls.Add(ifz);
 
-            Controls.Add(b);            
+                entropy = new Button();
+                entropy.Text = "Entropy";
+                entropy.Location = new Point(posunX + ifz.Width+5, posunY);
+                entropy.Click += new System.EventHandler(this.clickEntropy);
+                Controls.Add(entropy);
+            }
+
+                        
 
         }
 
-        private void informacniZisk(Dictionary<string, double> zisk) 
+        private void clickEntropy(object sender, EventArgs e)
         {
             /*
-             * metoda pro vypis inforomacniho zisku podle nepodminene entropie
+             * spusteni algoritmu podminene entropie
+             */
+            ts.initEntropy();
+            Dictionary<string, double> zisk = ts.spustEntropy(this.selectIndex);
+            zobrazVypocty(zisk);
+            Rozpad r = new Rozpad(ts.getKategory(), getMax(zisk).Key.ToString(), dt, this.selectIndex);
+            r.showForm();
+            ts.getData().Add(r.getTable());
+            dt = ts.getData()[ts.getData().Count - 1];
+            ts.setEntropy(dt.Rows.Count - 1);
+            ts.setKategory(dt);
+            ts.getEntropy().setKat(ts.getKategory());
+            ClickNext(sender, e);
+            kategoryTable();
+            ifz.Enabled = false;
+        }
+
+        ListBox lb = new ListBox();
+        private void zobrazVypocty(Dictionary<string, double> zisk) 
+        {
+            /*
+             * metoda pro vypis prubeznych vypoctu (vysledky) pro jednotlive kategorie
              * 
              */
 
-            int x=450, y=680;
-            Label l = new Label();
-            l.Location = new Point(x, y-16);
-            l.Size = new System.Drawing.Size(200, 13);
-            l.Text = "Informacni zisk:";
-            Controls.Add(l);
+            int x=450, y=650;            
+            lb.Size = new System.Drawing.Size(200, 150);
+            lb.Location = new Point(x, y);
+            Controls.Add(lb);
             int i = 0;
+            lb.Items.Add("Krok " + krok + ":");
             foreach (KeyValuePair<string, double> kvp in zisk)
             {
                 if (!nechteneAtributy[i].Checked && prediktori[i].Checked)
                 {
-                    l = new Label();
-                    l.Location = new Point(x, y);
-                    l.Size = new System.Drawing.Size(200, 13);
-                    l.Text = kvp.Key + ": " + kvp.Value.ToString();
-                    y += 16;
-                    Controls.Add(l);
+                    string s = kvp.Key + ": " + kvp.Value.ToString();
+                    lb.Items.Add(s);
                 }
                 i++;
             }
-            
+            krok += 1;            
         }
 
         private void clickIFZ(object sender, EventArgs e)
         {
-            informacniZisk(ts.spustEntropy(this.selectIndex));
-            string jmeno = getMax(ts.spustEntropy(this.selectIndex)).Key;
-            double hodnota = getMax(ts.spustEntropy(this.selectIndex)).Value;
-            Form krok = new Form();
-            Label max = new Label();                   
-            max.Location = new Point(10,10);
-            max.Size = new System.Drawing.Size(200, 13);
-            max.Text = "max: " + jmeno + " " + hodnota;
-            krok.Controls.Add(max);
-            krok.Show();
-        }
-
-        private void paint(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
+            /*
+             * spusteni algoritmu IFZ
+             */
+            ts.initIFZ();
+            Dictionary<string, double> zisk = ts.spustIFZ(this.selectIndex);
+            zobrazVypocty(zisk);
+            Rozpad r = new Rozpad(ts.getKategory(), getMax(zisk).Key.ToString(), dt, this.selectIndex);
+            r.showForm();
+            ts.getData().Add(r.getTable());
+            dt = ts.getData()[ts.getData().Count - 1];
+            ts.setIFZ(dt.Rows.Count - 1);
+            ts.setKategory(dt);
+            ts.getIFZ().setKat(ts.getKategory());
+            ClickNext(sender, e);
+            kategoryTable();
+            entropy.Enabled = false;
         }
 
         private KeyValuePair<string, double> getMax(Dictionary<string, double> zisk) 
-        {
+        {/*
+          * vraci dvojici jmeno a hodnotu pro nejvyhodnejsi kategorii
+          */
             double maxH = Double.MaxValue;
+            int i = 0, index = 0;
             KeyValuePair<string, double> max = new KeyValuePair<string,double>();
             foreach (KeyValuePair<string, double> kvp in zisk) {
                 double ziskH = Math.Abs(kvp.Value);
-                if (!kvp.Key.Equals(cilovaSkupina.SelectedItem.ToString()))
+                if (!kvp.Key.Equals(cilovaSkupina.SelectedItem.ToString()) && prediktori[i].Checked && ziskH != 0)
                     if (ziskH < maxH) {
                         maxH = ziskH;
                         max = kvp;
+                        index = i;
                     }
+                i++;
             }
+            prediktori[index].Checked = false;
             return max;
         }
 

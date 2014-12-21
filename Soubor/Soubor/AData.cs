@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 namespace Soubor
 {
     abstract class AData
-    {
+    {/*
+      * abstraktni trida pro vypocty IFZ, pod. e., GINI....
+      */
         protected Kategorie[] kat;
         protected int suma;
         protected Dictionary<string, double> zisk;
