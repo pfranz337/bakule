@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Soubor
@@ -31,6 +32,10 @@ namespace Soubor
             }
             this.dt = aktualni;
             this.predikovanyAtribut = cil;
+        }
+
+        public DataGridView[] getGridy(){
+            return this.data;
         }
 
         public void showForm()
@@ -75,7 +80,7 @@ namespace Soubor
                 data[ind].Location = new System.Drawing.Point(posunX, posunY);
                 data[ind].Size = new System.Drawing.Size(650, 250);
                 data[ind].DataSource = newDt;
-                this.listRozpadu.Add(newDt);
+                this.listRozpadu.Add(newDt);                
                 f.Controls.Add(data[ind]);
                 ind++;
                 posunY += 280;
@@ -95,17 +100,33 @@ namespace Soubor
                 }
             }
 
+            int j = 0;
+            DataTable ret = null;
             foreach (DataTable d in this.listRozpadu) 
             {
+                
                 string s = d.Rows[0][indexCile].ToString();
                 for (int i = 1; i < d.Rows.Count; i++) {
                     if (!d.Rows[i][indexCile].ToString().Equals(s))
+                    {                        
                         test = false;
+                    }
                     if (!test)
-                        return d;
+                    {
+                        data[j].Columns[predikovanyAtribut].DefaultCellStyle.BackColor = Color.Red;
+                        ret = d;
+                    }
                 }
+                j++;
             }
-            return null;
+            return ret;
+        }
+
+        public void obarveni() {
+            for (int i = 0; i < data.Length; i++) {
+                data[i].Columns[proMaxPre.getJmeno()].DefaultCellStyle.BackColor = Color.Pink;
+                data[i].Columns[predikovanyAtribut].DefaultCellStyle.BackColor = Color.Green;
+            }
         }
     }
 }

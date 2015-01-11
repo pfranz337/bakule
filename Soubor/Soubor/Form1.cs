@@ -219,22 +219,20 @@ namespace Soubor
         private void clickEnter(object sender, EventArgs e)
         {
             /*vymenuje po kliknuti na tl. nastaveni cilove skupiny a prediktora 
-             * (uklada si predchozi nastaveni a po zmene vraci nastavuje na puvodni)*/
+             * 
+             */
 
-            string cil = cilovaSkupina.SelectedItem.ToString();
+            string cil = cilovaSkupina.SelectedItem.ToString();              
 
-            for (int i = 0; i < prediktori.Length; i++) {
+            for (int i = 0; i < dataGridView1.Columns.Count; i++) {                                
                 if (prediktori[i].Checked)
-                {
-                    if (dt.Columns[i].ColumnName[dt.Columns[i].ColumnName.Length - 3].Equals('-') == false) ;
-                        //dt.Columns[i].ColumnName += " - P";
-                }
+                    dataGridView1.Columns[i].DefaultCellStyle.BackColor = Color.Pink;
                 else
-                    dt.Columns[i].ColumnName = prediktori[i].Name;
-                if (dt.Columns[i].ColumnName.Equals(cil))
-                {
-                    //dt.Columns[i].ColumnName += " CIL";     //zmena na " CIL" kvuli podmince Equals('-')
-                }
+                    dataGridView1.Columns[i].DefaultCellStyle.BackColor = Color.White;
+                if (nechteneAtributy[i].Checked)
+                    dataGridView1.Columns[i].DefaultCellStyle.BackColor = Color.Gray;
+                if (dataGridView1.Columns[i].Name.Equals(cil))
+                    dataGridView1.Columns[i].DefaultCellStyle.BackColor = Color.LightGreen;
             }
 
             this.selectIndex = cilovaSkupina.SelectedItem.ToString();
@@ -301,11 +299,14 @@ namespace Soubor
             /*
              * spusteni algoritmu podminene entropie
              */
-            ts.initEntropy();
+           
+            /*ts.initEntropy();
             Dictionary<string, double> zisk = ts.spustEntropy(this.selectIndex);
             zobrazVypocty(zisk);
-            Rozpad r = new Rozpad(ts.getKategory(), getMax(zisk).Key.ToString(), dt, this.selectIndex);
+            string vybranyPrediktor = getMax(zisk).Key.ToString();
+            Rozpad r = new Rozpad(ts.getKategory(), vybranyPrediktor, dt, this.selectIndex);
             r.showForm();
+            r.obarveni();
             ts.getData().Add(r.getTable());
             dt = ts.getData()[ts.getData().Count - 1];
             ts.setEntropy(dt.Rows.Count - 1);
@@ -314,6 +315,7 @@ namespace Soubor
             ClickNext(sender, e);
             kategoryTable();
             ifz.Enabled = false;
+            dataGridView1.Columns[vybranyPrediktor].DefaultCellStyle.BackColor = Color.Yellow;*/
         }
 
         ListBox lb = new ListBox();
@@ -350,8 +352,10 @@ namespace Soubor
             ts.initIFZ();
             Dictionary<string, double> zisk = ts.spustIFZ(this.selectIndex);
             zobrazVypocty(zisk);
-            Rozpad r = new Rozpad(ts.getKategory(), getMax(zisk).Key.ToString(), dt, this.selectIndex);
+            string vybranyPrediktor = getMax(zisk).Key.ToString();
+            Rozpad r = new Rozpad(ts.getKategory(), vybranyPrediktor, dt, this.selectIndex);
             r.showForm();
+            r.obarveni();
             ts.getData().Add(r.getTable());
             dt = ts.getData()[ts.getData().Count - 1];
             ts.setIFZ(dt.Rows.Count - 1);
@@ -360,6 +364,7 @@ namespace Soubor
             ClickNext(sender, e);
             kategoryTable();
             entropy.Enabled = false;
+            dataGridView1.Columns[vybranyPrediktor].DefaultCellStyle.BackColor = Color.Yellow;
         }
 
         private KeyValuePair<string, double> getMax(Dictionary<string, double> zisk) 
@@ -382,6 +387,14 @@ namespace Soubor
             prediktori[index].Checked = false;
             return max;
         }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form f = new Form();
+
+
+            f.Show();
+        }        
 
     }
 }
