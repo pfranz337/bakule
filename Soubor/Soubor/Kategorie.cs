@@ -11,10 +11,12 @@ namespace Soubor
 
         private Dictionary<string, int> kat;
         private string jmeno;
+        private string trida;   //podkategorie prediktora - vysoky, nizka, muz, zena, ano, ne, ...
 
         public Kategorie() {
             this.kat = new Dictionary<string,int>();
             this.jmeno = "";
+            this.trida = "";
         }
 
         public void pridejKat(string s){
@@ -30,8 +32,18 @@ namespace Soubor
             this.jmeno = s;
         }
 
+        public void setTrida(string s)
+        {
+            this.trida = s;
+        }
+
         public string getJmeno() {
             return this.jmeno;
+        }
+
+        public string getTrida()
+        {
+            return this.trida;
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Soubor
         private string cesta = "", text = "";
         private List<DataTable> data;
         private Kategorie[] k;
+        private Kategorie[][] k_ent;        //pole pro spojeni a vytvoreni kategorii (prediktor vs cilova skupina)
         private IFZ ifz;  //trida informacniho zisku s vypoctem
         private Entropy entropy;  //trida entropie s vypoctem
         public TypSoubor(string cesta) 
@@ -48,10 +49,10 @@ namespace Soubor
             return this.ifz.vypocet(cil);
         }
 
-        public Dictionary<string, double> spustEntropy(string cil)
+        public Dictionary<string, double> spustEntropy()
         {
             // metoda pro spusteni vypoctu nepodminene entropie
-            return this.entropy.vypocet(cil);
+            return this.entropy.vypocet();
         }
 
         public DataTable[] getKategoryTables()
@@ -109,11 +110,12 @@ namespace Soubor
             ifz.setKat(getKategory());
         }
 
-        public void initEntropy()
+        public void initEntropy(string cil)
         {
             //inicializace Entropy
             setEntropy(data[this.data.Count - 1].Rows.Count);
             entropy.setKat(getKategory());
+            entropy.setE_kat(getK_ent());
         }
 
         public void setIFZ(int i) {
@@ -128,27 +130,81 @@ namespace Soubor
             /*
              *  pocita kategorie z tabulky
              */
-            k = new Kategorie[dt.Columns.Count];
-            for (int i = 0; i < dt.Columns.Count; i++)
-            {
-                k[i] = new Kategorie();
-                k[i].setJmeno(dt.Columns[i].ColumnName);
-            }
-            for (int i = 0; i < dt.Rows.Count; i++)
-            {
-                for (int j = 0; j < dt.Columns.Count; j++)
+                k = new Kategorie[dt.Columns.Count];
+
+
+                for (int i = 0; i < dt.Columns.Count; i++)
                 {
-                    string s = dt.Rows[i][dt.Columns[j].ColumnName].ToString();
-                    if (k[j].getKat().ContainsKey(s))
+                    k[i] = new Kategorie();
+                    k[i].setJmeno(dt.Columns[i].ColumnName);
+                }
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    for (int j = 0; j < dt.Columns.Count; j++)
                     {
-                        k[j].getKat()[s]++;
-                    }
-                    else
-                    {
-                        k[j].pridejKat(s);
+                        string s = dt.Rows[i][dt.Columns[j].ColumnName].ToString();
+                        if (k[j].getKat().ContainsKey(s))
+                        {
+                            k[j].getKat()[s]++;
+                        }
+                        else
+                        {
+                            k[j].pridejKat(s);
+                        }
                     }
                 }
-            }                    
+        }
+
+        public void setCountTridaKategory(DataTable dt, string cil) {
+            /*
+             *  metoda pro vytvoreni tabulek zavislosti prediktor vs cilova skupina
+             */
+
+            k_ent = new Kategorie[dt.Columns.Count][];
+            for (int i = 0; i < dt.Columns.Count; i++) {
+                int pocetTrid = getKategory()[i].getKat().Count;
+                k_ent[i] = new Kategorie[pocetTrid];
+                int j = 0;
+                foreach (string nameTrida in getKategory()[i].getKat().Keys)
+                {
+                    //inicializace
+                    k_ent[i][j] = new Kategorie();
+                    k_ent[i][j].setJmeno(dt.Columns[i].ColumnName);
+                    k_ent[i][j].setTrida(nameTrida);    // trida = vysoky, vysoke, muz, zena,....
+
+                    j++;
+                }
+                
+            }
+
+            int k = 0;
+            while (k < k_ent.Length)
+            {
+                for (int i = 0; i < k_ent[k].Length; i++)
+                {
+                    for (int j = 0; j < dt.Rows.Count; j++)
+                    {
+                        if (k_ent[k][i].getJmeno() != cil) {
+                            string bunka = dt.Rows[j][k_ent[k][i].getJmeno()].ToString();
+                            if (bunka == k_ent[k][i].getTrida()) {
+                                string cilovaBunka = dt.Rows[j][cil].ToString();
+                                if (k_ent[k][i].getKat().ContainsKey(cilovaBunka))
+                                {
+                                    k_ent[k][i].getKat()[cilovaBunka]++;
+                                }
+                                else {
+                                    k_ent[k][i].pridejKat(cilovaBunka);
+                                }
+                            }
+                        }
+                    }
+                }
+                k++;
+            }                
+        }
+
+        public Kategorie[][] getK_ent() {
+            return this.k_ent;
         }
 
         public Kategorie[] getKategory()

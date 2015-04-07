@@ -11,6 +11,7 @@ namespace Soubor
       * abstraktni trida pro vypocty IFZ, pod. e., GINI....
       */
         protected Kategorie[] kat;
+        protected Kategorie[][] e_kat;
         protected int suma;
         protected Dictionary<string, double> zisk;
 
@@ -23,7 +24,12 @@ namespace Soubor
             this.kat = k;
         }
 
+        public void setE_kat(Kategorie[][] e_kat) {
+            this.e_kat = e_kat;
+        }   
 
-        abstract public Dictionary<string, double> vypocet(string cil); 
+        abstract public Dictionary<string, double> vypocet(string cil); //pro IFZ
+
+        abstract public Dictionary<string, double> vypocet();   //pro entropii
     }
 }

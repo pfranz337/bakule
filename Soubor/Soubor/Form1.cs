@@ -236,6 +236,7 @@ namespace Soubor
             }
 
             this.selectIndex = cilovaSkupina.SelectedItem.ToString();
+            ts.setCountTridaKategory(dt, this.selectIndex);
             kategoryTable();
         }
 
@@ -290,32 +291,42 @@ namespace Soubor
                 Controls.Add(entropy);
             }
 
-                        
-
         }
 
+        private bool clickEnt = true;
         private void clickEntropy(object sender, EventArgs e)
         {
             /*
              * spusteni algoritmu podminene entropie
              */
+
+            clickIfz = false;   //pro rozliseni vyberu v getMax()
+            try
+            {
+                ts.initEntropy(this.selectIndex);
+                Dictionary<string, double> zisk = ts.spustEntropy();
+                zobrazVypocty(zisk);
+                string vybranyPrediktor = getMax(zisk).Key.ToString();
+                Rozpad r = new Rozpad(ts.getKategory(), vybranyPrediktor, dt, this.selectIndex);
+                r.showForm();
+                r.obarveni();
            
-            /*ts.initEntropy();
-            Dictionary<string, double> zisk = ts.spustEntropy(this.selectIndex);
-            zobrazVypocty(zisk);
-            string vybranyPrediktor = getMax(zisk).Key.ToString();
-            Rozpad r = new Rozpad(ts.getKategory(), vybranyPrediktor, dt, this.selectIndex);
-            r.showForm();
-            r.obarveni();
-            ts.getData().Add(r.getTable());
-            dt = ts.getData()[ts.getData().Count - 1];
-            ts.setEntropy(dt.Rows.Count - 1);
-            ts.setKategory(dt);
-            ts.getEntropy().setKat(ts.getKategory());
-            ClickNext(sender, e);
-            kategoryTable();
-            ifz.Enabled = false;
-            dataGridView1.Columns[vybranyPrediktor].DefaultCellStyle.BackColor = Color.Yellow;*/
+                ts.getData().Add(r.getTable());
+                dt = ts.getData()[ts.getData().Count - 1];
+                ts.setEntropy(dt.Rows.Count - 1);
+                ts.setKategory(dt);
+                ts.getEntropy().setKat(ts.getKategory());
+                ts.setCountTridaKategory(dt, this.selectIndex);     //nastaveni novych spoju tabulek (prediktor vs cilova skupina)
+                ClickNext(sender, e);
+                kategoryTable();
+                ifz.Enabled = false;
+                dataGridView1.Columns[vybranyPrediktor].DefaultCellStyle.BackColor = Color.Yellow;
+            }
+            catch (NullReferenceException) 
+            { 
+                MessageBox.Show("Žádná další tabulka ke zpracování."); 
+                ifz.Enabled = false; 
+            }
         }
 
         ListBox lb = new ListBox();
@@ -344,11 +355,13 @@ namespace Soubor
             krok += 1;            
         }
 
+        bool clickIfz = true;
         private void clickIFZ(object sender, EventArgs e)
         {
             /*
              * spusteni algoritmu IFZ
              */
+            clickEnt = false;       //pro nastaveni vyberu v gatMax()
             ts.initIFZ();
             Dictionary<string, double> zisk = ts.spustIFZ(this.selectIndex);
             zobrazVypocty(zisk);
@@ -356,45 +369,214 @@ namespace Soubor
             Rozpad r = new Rozpad(ts.getKategory(), vybranyPrediktor, dt, this.selectIndex);
             r.showForm();
             r.obarveni();
-            ts.getData().Add(r.getTable());
-            dt = ts.getData()[ts.getData().Count - 1];
-            ts.setIFZ(dt.Rows.Count - 1);
-            ts.setKategory(dt);
-            ts.getIFZ().setKat(ts.getKategory());
-            ClickNext(sender, e);
-            kategoryTable();
-            entropy.Enabled = false;
-            dataGridView1.Columns[vybranyPrediktor].DefaultCellStyle.BackColor = Color.Yellow;
+            vytvorStrom(r);            
+            try
+            {
+                ts.getData().Add(r.getTable());
+                dt = ts.getData()[ts.getData().Count - 1];
+                ts.setKategory(dt);
+                ClickNext(sender, e);
+                kategoryTable();
+                entropy.Enabled = false;
+                dataGridView1.Columns[vybranyPrediktor].DefaultCellStyle.BackColor = Color.Yellow;
+
+            }
+            catch (NullReferenceException) 
+            { 
+                MessageBox.Show("Žádná další tabulka ke zpracování."); 
+                ifz.Enabled = false; 
+            }
         }
+
+        int count = 0;
+        Uzel posledni;
+        List<Uzel> strom = new List<Uzel>();
+        private void vytvorStrom(Rozpad r) {
+            /*
+             *  metoda pro vytvoreni stromu
+             *  poprve se nastavi hlavni uzel a k nemu se pak uz jenom pridavaji potomci, ktere se nastavuji
+             */
+            if (count == 0)
+            {
+                Uzel u = new Uzel();
+                u.setJmRodice("Cela tabulka");
+                u.setJmUzlu(r.getProMaxPre().getJmeno());
+                foreach (KeyValuePair<string, int> potomek in r.getProMaxPre().getKat())
+                {
+                    u.setPotomci(potomek.Key.ToString(), u.getJmRodice());
+                }
+                u.getPotomci()[r.getIndexTab()].setStatus();
+                count++;
+                posledni = u;                
+            }
+            else {
+                if (posledni.getFalsePotomka().getStatus())
+                {
+                    Uzel u = posledni.getFalsePotomka();
+                    u.setJmRodice(posledni.getJmUzlu());
+                    u.setJmUzlu(r.getProMaxPre().getJmeno());
+                    foreach (KeyValuePair<string, int> potomek in r.getProMaxPre().getKat())
+                    {
+                        u.setPotomci(potomek.Key.ToString(), u.getJmRodice());
+                    }
+                    u.getPotomci()[r.getIndexTab()].setStatus();
+                    posledni = u;
+                }
+            }
+            strom.Add(posledni);
+        }
+        
 
         private KeyValuePair<string, double> getMax(Dictionary<string, double> zisk) 
         {/*
           * vraci dvojici jmeno a hodnotu pro nejvyhodnejsi kategorii
           */
-            double maxH = Double.MaxValue;
+
+            //vyber porovnani podle vybraneho algoritmu
+            double minH = 0;
+            if (clickIfz)
+                minH = -Double.MaxValue;
+            if (clickEnt)
+                minH = Double.MaxValue;
             int i = 0, index = 0;
-            KeyValuePair<string, double> max = new KeyValuePair<string,double>();
+            bool test = false;
+            KeyValuePair<string, double> pom = new KeyValuePair<string, double>();
+            KeyValuePair<string, double> max = new KeyValuePair<string, double>();
             foreach (KeyValuePair<string, double> kvp in zisk) {
-                double ziskH = Math.Abs(kvp.Value);
-                if (!kvp.Key.Equals(cilovaSkupina.SelectedItem.ToString()) && prediktori[i].Checked && ziskH != 0)
-                    if (ziskH < maxH) {
-                        maxH = ziskH;
-                        max = kvp;
-                        index = i;
+                //double ziskH = Math.Abs(kvp.Value);
+                double ziskH = kvp.Value;
+                if (!kvp.Key.Equals(cilovaSkupina.SelectedItem.ToString()) && prediktori[i].Checked)
+                {
+
+                    //vyber porovnani podle vybraneho algoritmu
+                    if (clickIfz){ 
+                        if (ziskH > minH)
+                        {
+                            minH = ziskH;
+                            max = kvp;
+                            index = i;
+                            test = true;
+                        }
                     }
+                    if (clickEnt){ 
+                        if (ziskH < minH)
+                        {
+                            minH = ziskH;
+                            max = kvp;
+                            index = i;
+                            test = true;
+                        }
+                    }
+                }
+                pom = kvp;
                 i++;
             }
+            if (test == false)
+                max = pom;
             prediktori[index].Checked = false;
             return max;
         }
 
-        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        int helpKlik = 0;
+        private void helpMenuButton(object sender, EventArgs e)
         {
-            Form f = new Form();
+            if (helpKlik == 0)
+            {
+                helpKlik++;
+
+                int x = 5, y = 5;
+                Form f = new Form();
+                Label l = new Label();
+                l.Location = new Point(x, y);
+                l.Size = new System.Drawing.Size(130, 13);
+                l.Text = "Pro hlavní okno:";
+                f.Controls.Add(l);
+
+                y += 20;
+
+                Label seda = new Label();
+                seda.Location = new Point(x, y);
+                seda.Size = new System.Drawing.Size(130, 13);
+                seda.BackColor = Color.Gray;
+                seda.Text = "Nepouzivany atribut";
+
+                y += 20;
+
+                Label ruzova = new Label();
+                ruzova.Location = new Point(x, y);
+                ruzova.Size = new System.Drawing.Size(130, 13);
+                ruzova.BackColor = Color.Pink;
+                ruzova.Text = "Nepouzity prediktor";
+                f.Controls.Add(ruzova);
+
+                y += 20;
+
+                Label zluta = new Label();
+                zluta.Location = new Point(x, y);
+                zluta.Size = new System.Drawing.Size(130, 13);
+                zluta.BackColor = Color.Yellow;
+                zluta.Text = "Pouzity prediktor";
+
+                y += 20;
+
+                Label zelena = new Label();
+                zelena.Location = new Point(x, y);
+                zelena.Size = new System.Drawing.Size(130, 13);
+                zelena.BackColor = Color.LightGreen;
+                zelena.Text = "Predikovany atribut";
+                f.Controls.Add(zelena);
+
+                y += 40;
+
+                l = new Label();
+                l.Location = new Point(x, y);
+                l.Size = new System.Drawing.Size(130, 13);
+                l.Text = "Pro okno rozpadu:";
+
+                y += 20;
+
+                ruzova = new Label();
+                ruzova.Location = new Point(x, y);
+                ruzova.Size = new System.Drawing.Size(130, 13);
+                ruzova.BackColor = Color.Pink;
+                ruzova.Text = "Vybranný prediktor";
+
+                y += 20;
+
+                zelena = new Label();
+                zelena.Location = new Point(x, y);
+                zelena.Size = new System.Drawing.Size(130, 13);
+                zelena.BackColor = Color.Green;
+                zelena.Text = "Jednoznačně určeno";
+
+                y += 20;
+
+                Label cervena = new Label();
+                cervena.Location = new Point(x, y);
+                cervena.Size = new System.Drawing.Size(130, 13);
+                cervena.BackColor = Color.Red;
+                cervena.Text = "Nejednoznačně určeno";
 
 
-            f.Show();
-        }        
+                f.Controls.Add(l);
+                f.Controls.Add(ruzova);
+                f.Controls.Add(cervena);
+                f.Controls.Add(zluta);
+                f.Controls.Add(zelena);
+                f.Controls.Add(seda);
 
+                f.Show();
+
+                f.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.zavriHelp);
+            }
+            else {
+                MessageBox.Show("Help zu je otevreny");
+            }
+        }
+
+        private void zavriHelp(object sender, FormClosedEventArgs e)
+        {
+            helpKlik = 0;
+        }
     }
 }

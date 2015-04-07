@@ -19,6 +19,7 @@ namespace Soubor
         private Kategorie proMaxPre;    //pro maximalniho prediktora
         private string predikovanyAtribut;
         private List<DataTable> listRozpadu;
+        private int indexVraceneTab;
 
         public Rozpad(Kategorie[] k, string maxPrediktor, DataTable aktualni, string cil) {
             //inicializace
@@ -115,10 +116,14 @@ namespace Soubor
                     {
                         data[j].Columns[predikovanyAtribut].DefaultCellStyle.BackColor = Color.Red;
                         ret = d;
+                        this.indexVraceneTab = j;   //index pro vraceni tabulky, ktera neni jednoznacne urcena
                     }
                 }
+                
                 j++;
             }
+
+
             return ret;
         }
 
@@ -127,6 +132,18 @@ namespace Soubor
                 data[i].Columns[proMaxPre.getJmeno()].DefaultCellStyle.BackColor = Color.Pink;
                 data[i].Columns[predikovanyAtribut].DefaultCellStyle.BackColor = Color.Green;
             }
+        }
+
+        public List<DataTable> getListRozpadu() {
+            return this.listRozpadu;
+        }
+
+        public int getIndexTab() {
+            return this.indexVraceneTab;
+        }
+
+        public Kategorie getProMaxPre() {
+            return this.proMaxPre;
         }
     }
 }
