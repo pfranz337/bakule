@@ -21,6 +21,8 @@ namespace Soubor
         private List<DataTable> listRozpadu;
         private int indexVraceneTab;
 
+        private List<Uzel> strom;
+
         public Rozpad(Kategorie[] k, string maxPrediktor, DataTable aktualni, string cil) {
             //inicializace
             for (int i = 0; i < k.Length; i++) {
@@ -33,6 +35,8 @@ namespace Soubor
             }
             this.dt = aktualni;
             this.predikovanyAtribut = cil;
+
+            strom = new List<Uzel>();
         }
 
         public DataGridView[] getGridy(){
@@ -56,8 +60,17 @@ namespace Soubor
             DataTable newDt;
             this.listRozpadu = new List<DataTable>();
             int ind = 0, posunX = 0, posunY = 0;
+
+            
+
             foreach (KeyValuePair<string, int> key in proMaxPre.getKat())
             {
+                Uzel u = new Uzel();
+
+                u.setJmUzlu(proMaxPre.getJmeno());
+                u.setJmKategorie(key.Key.ToString());
+                strom.Add(u);
+
                 newDt = new DataTable();
                 for (int i = 0; i < dt.Columns.Count; i++)
                 {
@@ -103,6 +116,8 @@ namespace Soubor
 
             int j = 0;
             DataTable ret = null;
+            bool[] kontrolaRozpadu = new bool[this.listRozpadu.Count];            
+
             foreach (DataTable d in this.listRozpadu) 
             {
                 
@@ -115,6 +130,7 @@ namespace Soubor
                     if (!test)
                     {
                         data[j].Columns[predikovanyAtribut].DefaultCellStyle.BackColor = Color.Red;
+                        kontrolaRozpadu[j] = true;
                         ret = d;
                         this.indexVraceneTab = j;   //index pro vraceni tabulky, ktera neni jednoznacne urcena
                     }
@@ -122,9 +138,27 @@ namespace Soubor
                 
                 j++;
             }
+            
+            if (ret != null)
+                strom[this.indexVraceneTab].setStatus();    //status se nastavuje jenom tem uzlum, ktere maji nejednoznacne urceni
 
+            //kontrola toho, jestli se puvodni tabulka rozpadla na jednoznacne a nejednoznacne tabulky
+            bool kontrola = false;
+            bool b = kontrolaRozpadu[0];
+            for (int i = 1; i < kontrolaRozpadu.Length; i++) {
+                if (b != kontrolaRozpadu[i]) {
+                    kontrola = true;
+                }
+            }
+
+            if (kontrola == false)
+                ret = null;
 
             return ret;
+        }
+
+        public List<Uzel> getVetve() {
+            return this.strom;
         }
 
         public void obarveni() {

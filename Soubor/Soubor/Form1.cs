@@ -24,6 +24,8 @@ namespace Soubor
         private CheckBox[] nechteneAtributy;    //checkboxy pro vypnuti nechtenych atributu
         private string selectIndex = "";
         private ComboBox cilovaSkupina = new ComboBox();
+        private Uzel prvni;
+
 
         private void MenuClickOpen(object sender, EventArgs e)
         {   //otevreni souboru a pocatecni init
@@ -238,6 +240,11 @@ namespace Soubor
             this.selectIndex = cilovaSkupina.SelectedItem.ToString();
             ts.setCountTridaKategory(dt, this.selectIndex);
             kategoryTable();
+
+            //vytvoreni prvniho uzlu
+            this.prvni = new Uzel();
+            this.prvni.setJmUzlu("HLAVNI TABULKA");
+            
         }
 
         DataGridView[] dtv;
@@ -310,7 +317,7 @@ namespace Soubor
                 Rozpad r = new Rozpad(ts.getKategory(), vybranyPrediktor, dt, this.selectIndex);
                 r.showForm();
                 r.obarveni();
-           
+                vytvorStrom(r); 
                 ts.getData().Add(r.getTable());
                 dt = ts.getData()[ts.getData().Count - 1];
                 ts.setEntropy(dt.Rows.Count - 1);
@@ -321,6 +328,9 @@ namespace Soubor
                 kategoryTable();
                 ifz.Enabled = false;
                 dataGridView1.Columns[vybranyPrediktor].DefaultCellStyle.BackColor = Color.Yellow;
+
+
+
             }
             catch (NullReferenceException) 
             { 
@@ -388,42 +398,45 @@ namespace Soubor
             }
         }
 
-        int count = 0;
-        Uzel posledni;
-        List<Uzel> strom = new List<Uzel>();
-        private void vytvorStrom(Rozpad r) {
+        List<List<Uzel>> vetve = new List<List<Uzel>>();    //zde ulozeny vsechny vetve stromu       
+        int x, y;
+        private void vytvorStrom(Rozpad r) {      
             /*
-             *  metoda pro vytvoreni stromu
-             *  poprve se nastavi hlavni uzel a k nemu se pak uz jenom pridavaji potomci, ktere se nastavuji
+             *  zobrazuje form se stromem rozpadu
              */
-            if (count == 0)
-            {
-                Uzel u = new Uzel();
-                u.setJmRodice("Cela tabulka");
-                u.setJmUzlu(r.getProMaxPre().getJmeno());
-                foreach (KeyValuePair<string, int> potomek in r.getProMaxPre().getKat())
-                {
-                    u.setPotomci(potomek.Key.ToString(), u.getJmRodice());
-                }
-                u.getPotomci()[r.getIndexTab()].setStatus();
-                count++;
-                posledni = u;                
-            }
-            else {
-                if (posledni.getFalsePotomka().getStatus())
-                {
-                    Uzel u = posledni.getFalsePotomka();
-                    u.setJmRodice(posledni.getJmUzlu());
-                    u.setJmUzlu(r.getProMaxPre().getJmeno());
-                    foreach (KeyValuePair<string, int> potomek in r.getProMaxPre().getKat())
-                    {
-                        u.setPotomci(potomek.Key.ToString(), u.getJmRodice());
+
+            Form strom = new Form();
+            strom.ClientSize = new System.Drawing.Size(700, 500);
+            strom.Paint += new System.Windows.Forms.PaintEventHandler(this.vykresliStrom);
+            x = 10; y = 50;
+            vetve.Add(r.getVetve());
+            strom.Show();
+        }
+
+        
+        private void vykresliStrom(object sender, PaintEventArgs e) {
+            /*
+             *  vykresluje strim rozpadu - vzdy cely od zacatku postupne do soucasneho kroku
+             */
+
+            e.Graphics.DrawString(this.prvni.getJmUzlu(), new Font(FontFamily.Families[0], 12), Brushes.Black, x, y);
+
+            int xx = x, yy = y + 50;
+            foreach (List<Uzel> u in vetve) {
+                int pocetUzlu = u.Count;
+                for (int i = 0; i < pocetUzlu; i++) {
+                    e.Graphics.DrawLine(new Pen(Brushes.Black), x+10, y+20, xx, yy);
+                    e.Graphics.DrawString(u[i].getJmUzlu() + " - " + u[i].getJmKategorie(), 
+                        new Font(FontFamily.Families[0], 12), Brushes.Black, xx, yy);
+                    if (i < pocetUzlu -1)
+                        xx += 110;
+                    if (u[i].getStatus() == false) {
+                        x = xx;
+                        y = yy;
                     }
-                    u.getPotomci()[r.getIndexTab()].setStatus();
-                    posledni = u;
                 }
-            }
-            strom.Add(posledni);
+                yy += 50;
+            }                          
         }
         
 
