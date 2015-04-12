@@ -24,7 +24,8 @@ namespace Soubor
         private CheckBox[] nechteneAtributy;    //checkboxy pro vypnuti nechtenych atributu
         private string selectIndex = "";
         private ComboBox cilovaSkupina = new ComboBox();
-        private Uzel prvni;        
+        private Uzel prvni;
+
 
         private void MenuClickOpen(object sender, EventArgs e)
         {   //otevreni souboru a pocatecni init
@@ -37,7 +38,7 @@ namespace Soubor
             dataGridView1.DataSource = dt;
             dataGridView1.AutoResizeColumns();            
             this.index = 0;
-            check();
+            check();            
         }
         
         private void check() {
@@ -103,7 +104,6 @@ namespace Soubor
 
         private void naplnBox(object sender, EventArgs e)
         {
-            enter.Enabled = true;
             //naplni combobox nazvama sloupcu tabulky
             if (pocetKliknuti > 0)
             {   //mazani zaskrtnutych prediktoru s comboboxu
@@ -142,7 +142,6 @@ namespace Soubor
             
         }
 
-        Button enter = new Button();
         private void initComboLine() 
         {
             /*
@@ -151,6 +150,7 @@ namespace Soubor
 
 
             Label cil = new Label();
+            Button enter = new Button();
 
             int x = 180, y = 130;
             string s = "Vyber predikovany atribut: ";
@@ -223,7 +223,7 @@ namespace Soubor
             /*vymenuje po kliknuti na tl. nastaveni cilove skupiny a prediktora 
              * 
              */
-            krok = 1;
+
             string cil = cilovaSkupina.SelectedItem.ToString();              
 
             for (int i = 0; i < dataGridView1.Columns.Count; i++) {                                
@@ -244,8 +244,7 @@ namespace Soubor
             //vytvoreni prvniho uzlu
             this.prvni = new Uzel();
             this.prvni.setJmUzlu("HLAVNI TABULKA");
-
-            menuStrom.Enabled = true;
+            
         }
 
         DataGridView[] dtv;
@@ -307,63 +306,51 @@ namespace Soubor
             /*
              * spusteni algoritmu podminene entropie
              */
-            if ((krok - 1) < pocetKliknuti)
+
+            clickIfz = false;   //pro rozliseni vyberu v getMax()
+            try
             {
-                enter.Enabled = false;
-                clickIfz = false;   //pro rozliseni vyberu v getMax()
-                try
-                {
-                    ts.initEntropy(this.selectIndex);
-                    Dictionary<string, double> zisk = ts.spustEntropy();
-                    ulozVypocty(zisk);
-                    string vybranyPrediktor = getMax(zisk).Key.ToString();
-                    Rozpad r = new Rozpad(ts.getKategory(), vybranyPrediktor, dt, this.selectIndex);
-                    r.showForm();
-                    r.obarveni();
-                    vytvorStrom(r);
-                    ts.getData().Add(r.getTable());
-                    dt = ts.getData()[ts.getData().Count - 1];
-                    ts.setEntropy(dt.Rows.Count - 1);
-                    ts.setKategory(dt);
-                    ts.getEntropy().setKat(ts.getKategory());
-                    ts.setCountTridaKategory(dt, this.selectIndex);     //nastaveni novych spoju tabulek (prediktor vs cilova skupina)
-                    ClickNext(sender, e);
-                    kategoryTable();
-                    ifz.Enabled = false;
-                    dataGridView1.Columns[vybranyPrediktor].DefaultCellStyle.BackColor = Color.Yellow;
+                ts.initEntropy(this.selectIndex);
+                Dictionary<string, double> zisk = ts.spustEntropy();
+                zobrazVypocty(zisk);
+                string vybranyPrediktor = getMax(zisk).Key.ToString();
+                Rozpad r = new Rozpad(ts.getKategory(), vybranyPrediktor, dt, this.selectIndex);
+                r.showForm();
+                r.obarveni();
+                vytvorStrom(r); 
+                ts.getData().Add(r.getTable());
+                dt = ts.getData()[ts.getData().Count - 1];
+                ts.setEntropy(dt.Rows.Count - 1);
+                ts.setKategory(dt);
+                ts.getEntropy().setKat(ts.getKategory());
+                ts.setCountTridaKategory(dt, this.selectIndex);     //nastaveni novych spoju tabulek (prediktor vs cilova skupina)
+                ClickNext(sender, e);
+                kategoryTable();
+                ifz.Enabled = false;
+                dataGridView1.Columns[vybranyPrediktor].DefaultCellStyle.BackColor = Color.Yellow;
 
 
 
-                }
-                catch (NullReferenceException)
-                {
-                    MessageBox.Show("Žádná další tabulka ke zpracování.");
-                    entropy.Enabled = false;
-                }
             }
-            else
-            {
-                MessageBox.Show("Konec");
+            catch (NullReferenceException) 
+            { 
+                MessageBox.Show("Žádná další tabulka ke zpracování."); 
+                ifz.Enabled = false; 
             }
         }
 
         ListBox lb = new ListBox();
-        private Form vypocty = new Form();
-        private void ulozVypocty(Dictionary<string, double> zisk) 
+        private void zobrazVypocty(Dictionary<string, double> zisk) 
         {
             /*
              * metoda pro vypis prubeznych vypoctu (vysledky) pro jednotlive kategorie
              * 
              */
-            int x=0, y=0;            
+
+            int x=450, y=650;            
             lb.Size = new System.Drawing.Size(200, 150);
             lb.Location = new Point(x, y);
-
-            
-            vypocty.Controls.Add(lb);
-            vypocty.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.closingVypocty);
-            
-            
+            Controls.Add(lb);
             int i = 0;
             lb.Items.Add("Krok " + krok + ":");
             foreach (KeyValuePair<string, double> kvp in zisk)
@@ -375,20 +362,7 @@ namespace Soubor
                 }
                 i++;
             }
-
-            if (krok == 1)
-                vypocty.Show();
-
             krok += 1;            
-        }
-
-        private bool zavriVypocty = true;
-        private void closingVypocty(object sender, FormClosingEventArgs e)
-        {
-            if (zavriVypocty)
-                e.Cancel = true;
-            else
-                e.Cancel = false;
         }
 
         bool clickIfz = true;
@@ -397,37 +371,30 @@ namespace Soubor
             /*
              * spusteni algoritmu IFZ
              */
-            if ((krok - 1) < pocetKliknuti)
+            clickEnt = false;       //pro nastaveni vyberu v gatMax()
+            ts.initIFZ();
+            Dictionary<string, double> zisk = ts.spustIFZ(this.selectIndex);
+            zobrazVypocty(zisk);
+            string vybranyPrediktor = getMax(zisk).Key.ToString();
+            Rozpad r = new Rozpad(ts.getKategory(), vybranyPrediktor, dt, this.selectIndex);
+            r.showForm();
+            r.obarveni();
+            vytvorStrom(r);            
+            try
             {
-                enter.Enabled = false;
-                clickEnt = false;       //pro nastaveni vyberu v gatMax()
-                ts.initIFZ();
-                Dictionary<string, double> zisk = ts.spustIFZ(this.selectIndex);
-                ulozVypocty(zisk);
-                string vybranyPrediktor = getMax(zisk).Key.ToString();
-                Rozpad r = new Rozpad(ts.getKategory(), vybranyPrediktor, dt, this.selectIndex);
-                r.showForm();
-                r.obarveni();
-                vytvorStrom(r);
-                try
-                {
-                    ts.getData().Add(r.getTable());
-                    dt = ts.getData()[ts.getData().Count - 1];
-                    ts.setKategory(dt);
-                    ClickNext(sender, e);
-                    kategoryTable();
-                    entropy.Enabled = false;
-                    dataGridView1.Columns[vybranyPrediktor].DefaultCellStyle.BackColor = Color.Yellow;
+                ts.getData().Add(r.getTable());
+                dt = ts.getData()[ts.getData().Count - 1];
+                ts.setKategory(dt);
+                ClickNext(sender, e);
+                kategoryTable();
+                entropy.Enabled = false;
+                dataGridView1.Columns[vybranyPrediktor].DefaultCellStyle.BackColor = Color.Yellow;
 
-                }
-                catch (NullReferenceException)
-                {
-                    MessageBox.Show("Žádná další tabulka ke zpracování.");
-                    ifz.Enabled = false;
-                }
             }
-            else {
-                MessageBox.Show("Konec");
+            catch (NullReferenceException) 
+            { 
+                MessageBox.Show("Žádná další tabulka ke zpracování."); 
+                ifz.Enabled = false; 
             }
         }
 
@@ -438,12 +405,18 @@ namespace Soubor
              *  zobrazuje form se stromem rozpadu
              */
 
+            Form strom = new Form();
+            strom.ClientSize = new System.Drawing.Size(700, 500);
+            strom.Paint += new System.Windows.Forms.PaintEventHandler(this.vykresliStrom);
+            x = 10; y = 50;
             vetve.Add(r.getVetve());
+            strom.Show();
         }
+
         
         private void vykresliStrom(object sender, PaintEventArgs e) {
             /*
-             *  vykresluje strom rozpadu - vzdy cely od zacatku postupne do soucasneho kroku
+             *  vykresluje strim rozpadu - vzdy cely od zacatku postupne do soucasneho kroku
              */
 
             e.Graphics.DrawString(this.prvni.getJmUzlu(), new Font(FontFamily.Families[0], 12), Brushes.Black, x, y);
@@ -466,6 +439,7 @@ namespace Soubor
             }                          
         }
         
+
         private KeyValuePair<string, double> getMax(Dictionary<string, double> zisk) 
         {/*
           * vraci dvojici jmeno a hodnotu pro nejvyhodnejsi kategorii
@@ -617,35 +591,5 @@ namespace Soubor
         {
             helpKlik = 0;
         }
-
-        private void restartApp(object sender, EventArgs e)
-        {
-            zavriVypocty = false;
-            vypocty.Close();
-            Application.Restart();
-        }
-
-        int stromClick = 0;
-        private void zobrazStrom(object sender, EventArgs e)
-        {
-            if (stromClick == 0)
-            {
-                Form strom = new Form();
-                strom.ClientSize = new System.Drawing.Size(700, 500);
-                strom.Paint += new System.Windows.Forms.PaintEventHandler(this.vykresliStrom);
-                strom.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.zavriStrom);
-                x = 10; y = 10;
-                stromClick++;
-                strom.Show();
-            }
-            else {
-                MessageBox.Show("Strom je jiz zobrazen");
-            }
-        }
-
-        private void zavriStrom(object sender, FormClosedEventArgs e)
-        {
-            stromClick = 0;
-        }        
     }
 }

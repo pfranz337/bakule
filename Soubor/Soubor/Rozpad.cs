@@ -116,8 +116,8 @@ namespace Soubor
 
             int j = 0;
             DataTable ret = null;
-            bool[] kontrolaRozpadu = new bool[this.listRozpadu.Count];
-            int pocetNejednoznacnych = 0;
+            bool[] kontrolaRozpadu = new bool[this.listRozpadu.Count];            
+
             foreach (DataTable d in this.listRozpadu) 
             {
                 
@@ -131,7 +131,6 @@ namespace Soubor
                     {
                         data[j].Columns[predikovanyAtribut].DefaultCellStyle.BackColor = Color.Red;
                         kontrolaRozpadu[j] = true;
-                        
                         ret = d;
                         this.indexVraceneTab = j;   //index pro vraceni tabulky, ktera neni jednoznacne urcena
                     }
@@ -143,14 +142,16 @@ namespace Soubor
             if (ret != null)
                 strom[this.indexVraceneTab].setStatus();    //status se nastavuje jenom tem uzlum, ktere maji nejednoznacne urceni
 
-            //kontrola toho, jestli se puvodni tabulka rozpadla na jednoznacne a nejednoznacne tabulky            
-            for (int i = 0; i < kontrolaRozpadu.Length; i++) {
-                if (kontrolaRozpadu[i] == true) {
-                    pocetNejednoznacnych++;
+            //kontrola toho, jestli se puvodni tabulka rozpadla na jednoznacne a nejednoznacne tabulky
+            bool kontrola = false;
+            bool b = kontrolaRozpadu[0];
+            for (int i = 1; i < kontrolaRozpadu.Length; i++) {
+                if (b != kontrolaRozpadu[i]) {
+                    kontrola = true;
                 }
             }
 
-            if (pocetNejednoznacnych > 1)  
+            if (kontrola == false)
                 ret = null;
 
             return ret;

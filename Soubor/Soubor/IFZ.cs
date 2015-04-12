@@ -22,12 +22,12 @@ namespace Soubor
             /*
              *metoda pro vypocet Informacniho zisku           
              */
-            //AllocConsole();
+            AllocConsole();
             double vysledek = 0;
             //double vysledek2 = 0;
             this.zisk = new Dictionary<string, double>();
             for (int i = 0; i < kat.Length; i++) {
-                //Console.Write(kat[i].getJmeno() + "\n");
+                Console.Write(kat[i].getJmeno() + "\n");
                 foreach (float j in kat[i].getKat().Values) 
                 {                    
                     double mezi = (j / suma) * Math.Log((j / suma), 2);
@@ -57,7 +57,7 @@ namespace Soubor
 
                 if (!kat[i].getJmeno().Equals(cil))
                 {
-                    //Console.Write("Vysledek2: " + kat[i].getJmeno() + ": " + (zisk[cil] - zisk[kat[i].getJmeno()]) + "\n");
+                    Console.Write("Vysledek2: " + kat[i].getJmeno() + ": " + (zisk[cil] - zisk[kat[i].getJmeno()]) + "\n");
                     //zisk[kat[i].getJmeno()] = Math.Abs(zisk[cil] - zisk[kat[i].getJmeno()]);
                     zisk[kat[i].getJmeno()] = (zisk[cil] - zisk[kat[i].getJmeno()]);
                 }
@@ -65,8 +65,8 @@ namespace Soubor
             
             return this.zisk;
         }
-        //[DllImport("kernel32.dll", SetLastError = true)]
-        //[return: MarshalAs(UnmanagedType.Bool)]
-        //static extern bool AllocConsole();
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool AllocConsole();
     }
 }
