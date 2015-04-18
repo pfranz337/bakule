@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Soubor", "Soubor\Soubor.csproj", "{37A7D802-2A7A-46B1-B21D-7302BB78E648}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakalarskaPrace", "Soubor\BakalarskaPrace.csproj", "{37A7D802-2A7A-46B1-B21D-7302BB78E648}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
